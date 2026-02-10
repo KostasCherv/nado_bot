@@ -85,62 +85,16 @@ export function calculatePivotLevels({
 
   // Resistance levels (short entries)
   for (let i = 1; i <= rLevelsCount; i++) {
-    let price = 0;
-    let type = '';
-
-    switch (i) {
-      case 1:
-        price = 2 * pivot - low;
-        type = 'R1';
-        break;
-      case 2:
-        price = pivot + range;
-        type = 'R2';
-        break;
-      case 3:
-        price = high + 2 * (pivot - low);
-        type = 'R3';
-        break;
-      default:
-        price = pivot + i * range;
-        type = `R${i}`;
-        break;
-    }
-
+    const price = pivot + i * range;
     // Round to 4 decimal places for price increment compatibility
-    price = Math.round(price * 10000) / 10000;
-
-    levels.push({ price, side: 'short', pivotType: type });
+    levels.push({ price: Math.round(price * 10000) / 10000, side: 'short', pivotType: `R${i}` });
   }
 
   // Support levels (long entries)
   for (let i = 1; i <= sLevelsCount; i++) {
-    let price = 0;
-    let type = '';
-
-    switch (i) {
-      case 1:
-        price = 2 * pivot - high;
-        type = 'S1';
-        break;
-      case 2:
-        price = pivot - range;
-        type = 'S2';
-        break;
-      case 3:
-        price = low - 2 * (high - pivot);
-        type = 'S3';
-        break;
-      default:
-        price = pivot - i * range;
-        type = `S${i}`;
-        break;
-    }
-
+    const price = pivot - i * range;
     // Round to 4 decimal places for price increment compatibility
-    price = Math.round(price * 10000) / 10000;
-
-    levels.push({ price, side: 'long', pivotType: type });
+    levels.push({ price: Math.round(price * 10000) / 10000, side: 'long', pivotType: `S${i}` });
   }
 
   return levels;
@@ -158,7 +112,7 @@ export async function buildDynamicLevels(
   const levels: DynamicLevel[] = [];
   const period = CandlestickPeriod.HOUR;
 
-  log.info(`Fetching dynamic levels for ${products.length} product(s) and creating ${rLevelsCount} resistance levels and ${sLevelsCount} support levels`);
+  log.info(`Fetching dynamic levels for ${products.length} product(s)...`);
 
   // Fetch candlesticks for all products in parallel
   const productData = await Promise.all(

@@ -19,7 +19,7 @@ const log = createLogger('Strategy');
  * On TP/SL trigger, cancels the paired order and optionally re-arms the level.
  */
 export class StrategyEngine {
-  private orderManager: OrderManager;
+  public orderManager: OrderManager;
   private tracker: PositionTracker;
   private config: BotConfig;
   private levels: TradingLevel[];
@@ -399,19 +399,25 @@ export class StrategyEngine {
   async refreshLevels(): Promise<void> {
     log.info('Refreshing dynamic levels...');
 
-    // Build new dynamic levels
-    const result = await buildDynamicTradingLevels(
-      (this.orderManager as any).nadoClient,
-      this.config.products,
-      {
-        rLevelsCount: this.config.rLevelsCount,
-        sLevelsCount: this.config.sLevelsCount,
-        lookbackHours: this.config.lookbackHours,
-      },
-    );
+    try {
+      const result = await buildDynamicTradingLevels(
+        this.orderManager.nadoClient,
+        this.config.products,
+        {
+          rLevelsCount: this.config.rLevelsCount,
+          sLevelsCount: this.config.sLevelsCount,
+          lookbackHours: this.config.lookbackHours,
+        },
+      );
 
-    this.levels = result.levels;
-    log.info(`Refreshed ${this.levels.length} dynamic levels`);
+      this.levels = result.levels;
+      log.info(`Refreshed ${this.levels.length} dynamic levels`);
+    } catch (err) {
+      log.warn('Failed to refresh dynamic levels', {
+        error: (err as Error).message,
+      });
+      throw err;
+    }
   }
 
   /**

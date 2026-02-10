@@ -1,3 +1,4 @@
+import { NadoClient } from '@nadohq/client';
 import type { ProductConfig } from '../config.js';
 import { buildDynamicLevels, type DynamicLevel } from './dynamicLevels.js';
 
@@ -12,7 +13,7 @@ export interface TradingLevel {
  * Build dynamic trading levels for all products using pivot points
  */
 export async function buildDynamicTradingLevels(
-  nadoClient: any,
+  nadoClient: NadoClient,
   products: ProductConfig[],
   config: { rLevelsCount: number; sLevelsCount: number; lookbackHours: number },
 ): Promise<{ levels: TradingLevel[]; refreshedAt: number }> {

@@ -17,7 +17,7 @@ export interface OrderResult {
 }
 
 export class OrderManager {
-  private nadoClient: NadoClient;
+  public nadoClient: NadoClient;
   private config: BotConfig;
   private priceIncrementByProduct: Map<number, number> = new Map();
   private priceIncrementLoadPromise: Promise<void> | null = null;
